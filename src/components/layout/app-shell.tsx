@@ -27,7 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex h-screen items-center justify-center bg-[#0a0a0b]">
         <div className="flex flex-col items-center gap-3">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
-          <span className="text-sm text-zinc-500">Loading IMAGE COMPOSER...</span>
+          <span className="text-sm text-zinc-500">Loading FUNCTIONAL HUB...</span>
         </div>
       </div>
     );

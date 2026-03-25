@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { idbStorage } from './idb-storage';
 import { v4 as uuidv4 } from 'uuid';
-import type { AIModel, GeneratedImage, AppSettings, AppUser, GenerationJob, FaceConfig, BodyConfig, StyleConfig, SceneConfig, OutputConfig, CreditTier } from '@/types';
+import type { AIModel, GeneratedImage, AppSettings, AppUser, GenerationJob, FaceConfig, BodyConfig, StyleConfig, SceneConfig, OutputConfig, CreditTier, Project, ChatMessage, VideoJob } from '@/types';
 import { CREDIT_PACKS } from './constants';
 
 // ─── Default Configs ───────────────────────────────────────────
@@ -101,6 +101,25 @@ interface AppStore {
   // User Auth
   user: AppUser | null;
   setUser: (user: AppUser | null) => void;
+
+  // ── FUNCTIONAL HUB ─────────────────────────────────────────
+  // Projects
+  projects: Project[];
+  addProject: (project: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => Project;
+  updateProject: (id: string, updates: Partial<Project>) => void;
+  deleteProject: (id: string) => void;
+  getProject: (id: string) => Project | undefined;
+
+  // Chat
+  chatMessages: ChatMessage[];
+  addChatMessage: (msg: Omit<ChatMessage, 'id' | 'createdAt'>) => ChatMessage;
+  clearChat: () => void;
+
+  // Video Jobs
+  videoJobs: VideoJob[];
+  addVideoJob: (job: Omit<VideoJob, 'id' | 'startedAt'>) => VideoJob;
+  updateVideoJob: (id: string, updates: Partial<VideoJob>) => void;
+  removeVideoJob: (id: string) => void;
 
   // Defaults
   defaultFace: FaceConfig;
@@ -253,6 +272,65 @@ export const useAppStore = create<AppStore>()(
       user: null,
       setUser: (userData) => set({ user: userData }),
 
+      // ── FUNCTIONAL HUB: Projects ─────────────────────────────
+      projects: [],
+      addProject: (data) => {
+        const project: Project = {
+          ...data,
+          id: uuidv4(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        set((state) => ({ projects: [project, ...state.projects] }));
+        return project;
+      },
+      updateProject: (id, updates) => {
+        set((state) => ({
+          projects: state.projects.map((p) =>
+            p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
+          ),
+        }));
+      },
+      deleteProject: (id) => {
+        set((state) => ({ projects: state.projects.filter((p) => p.id !== id) }));
+      },
+      getProject: (id) => get().projects.find((p) => p.id === id),
+
+      // ── FUNCTIONAL HUB: Chat ─────────────────────────────────
+      chatMessages: [],
+      addChatMessage: (data) => {
+        const msg: ChatMessage = {
+          ...data,
+          id: uuidv4(),
+          createdAt: new Date().toISOString(),
+        };
+        set((state) => ({ chatMessages: [...state.chatMessages, msg] }));
+        return msg;
+      },
+      clearChat: () => set({ chatMessages: [] }),
+
+      // ── FUNCTIONAL HUB: Video Jobs ───────────────────────────
+      videoJobs: [],
+      addVideoJob: (data) => {
+        const job: VideoJob = {
+          ...data,
+          id: uuidv4(),
+          startedAt: new Date().toISOString(),
+        };
+        set((state) => ({ videoJobs: [...state.videoJobs, job] }));
+        return job;
+      },
+      updateVideoJob: (id, updates) => {
+        set((state) => ({
+          videoJobs: state.videoJobs.map((j) =>
+            j.id === id ? { ...j, ...updates } : j
+          ),
+        }));
+      },
+      removeVideoJob: (id) => {
+        set((state) => ({ videoJobs: state.videoJobs.filter((j) => j.id !== id) }));
+      },
+
       // ── Defaults ──────────────────────────────────────────────
       defaultFace,
       defaultBody,
@@ -267,6 +345,8 @@ export const useAppStore = create<AppStore>()(
         images: state.images,
         settings: state.settings,
         user: state.user,
+        projects: state.projects,
+        chatMessages: state.chatMessages,
       }),
       onRehydrateStorage: () => (state) => {
         if (state) {

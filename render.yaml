@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: image-composer
+    name: functional-hub
     runtime: node
     buildCommand: npm install && npm run build
     startCommand: npm run start
@@ -9,3 +9,11 @@ services:
         value: production
       - key: PORT
         value: "3000"
+      - key: REPLICATE_API_TOKEN
+        sync: false
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false

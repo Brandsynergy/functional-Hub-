@@ -131,3 +131,42 @@ export interface ExportPreset {
   aspectRatio: string;
   icon: string;
 }
+
+// ─── FUNCTIONAL HUB: Projects ──────────────────────────────────
+export interface Project {
+  id: string;
+  type: 'ugc-video' | 'youtube-clone' | 'product-shot' | 'chat-creation';
+  title: string;
+  status: 'draft' | 'generating' | 'completed' | 'failed';
+  productImage?: string;
+  script?: string;
+  sceneDescription?: string;
+  mood?: string;
+  style?: string;
+  youtubeUrl?: string;
+  youtubeTitle?: string;
+  youtubeThumbnail?: string;
+  result?: { url: string; type: 'image' | 'video' };
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ─── FUNCTIONAL HUB: Chat ──────────────────────────────────────
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  attachments?: { url: string; type: 'image' | 'video' }[];
+  createdAt: string;
+}
+
+// ─── FUNCTIONAL HUB: Video Jobs ────────────────────────────────
+export interface VideoJob {
+  id: string;
+  projectId: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  progress: number;
+  resultUrl?: string;
+  error?: string;
+  startedAt: string;
+}

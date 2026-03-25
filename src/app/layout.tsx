@@ -14,13 +14,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "IMAGE COMPOSER — AI Model & Influencer Studio",
-  description: "Create hyper-realistic AI models and generate stunning photo content for advertising, brands, and social media.",
+  title: "FUNCTIONAL HUB — Your Swiss Army Knife for Content Creation",
+  description: "Create UGC videos, AI product photography, YouTube-inspired content, and more — all from one dashboard powered by AI.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
-    title: "IMAGE COMPOSER",
+    title: "FUNCTIONAL HUB",
     startupImage: "/icons/icon-512.png",
   },
   icons: {
