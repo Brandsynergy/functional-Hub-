@@ -3,7 +3,11 @@ import Stripe from 'stripe';
 import { CREDIT_PACKS } from '@/lib/constants';
 import type { CreditTier } from '@/types';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error('STRIPE_SECRET_KEY is not configured.');
+  return new Stripe(key);
+}
 
 // Verify a completed checkout session (called on redirect back from Stripe)
 export async function GET(req: NextRequest) {
@@ -13,6 +17,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Missing session_id.' }, { status: 400 });
     }
 
+    const stripe = getStripe();
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
     if (session.payment_status !== 'paid') {
@@ -39,6 +44,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid tier.' }, { status: 400 });
     }
 
+    const stripe = getStripe();
     const origin = req.headers.get('origin') || 'http://localhost:3000';
 
     const session = await stripe.checkout.sessions.create({
