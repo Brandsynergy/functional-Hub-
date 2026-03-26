@@ -34,31 +34,41 @@ export function AuthDialog({ open, onOpenChange, defaultMode = 'signIn' }: AuthD
   const handleSignIn = async () => {
     setError('');
     setLoading(true);
-    const supabase = createClient();
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (err) {
-      setError(err.message);
-    } else {
-      resetForm();
-      onOpenChange(false);
+    try {
+      const supabase = createClient();
+      const { error: err } = await supabase.auth.signInWithPassword({ email, password });
+      if (err) {
+        setError(err.message);
+      } else {
+        resetForm();
+        onOpenChange(false);
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Authentication service unavailable. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSignUp = async () => {
     setError('');
     setLoading(true);
-    const supabase = createClient();
-    const { error: err } = await supabase.auth.signUp({
-      email,
-      password,
-      options: { data: { name } },
-    });
-    setLoading(false);
-    if (err) {
-      setError(err.message);
-    } else {
-      setMessage('Check your email for a confirmation link.');
+    try {
+      const supabase = createClient();
+      const { error: err } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { data: { name } },
+      });
+      if (err) {
+        setError(err.message);
+      } else {
+        setMessage('Check your email for a confirmation link.');
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Authentication service unavailable. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 

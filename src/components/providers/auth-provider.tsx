@@ -9,7 +9,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const grantFreeTrial = useAppStore((s) => s.grantFreeTrial);
 
   useEffect(() => {
-    const supabase = createClient();
+    let supabase;
+    try {
+      supabase = createClient();
+    } catch {
+      // Supabase not configured — skip auth
+      return;
+    }
 
     // Sync initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -40,7 +46,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             session.user.email?.split('@')[0] ??
             '',
         });
-        // Grant 2 free credits on first sign-in
         if (event === 'SIGNED_IN') {
           grantFreeTrial();
         }
