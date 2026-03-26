@@ -44,28 +44,49 @@ export async function POST(req: NextRequest) {
       ...(productImageUrl ? { first_frame_image: productImageUrl } : {}),
     };
 
-    // Try minimax video-01-live first, fallback to luma ray
+    // Try multiple video models with fallbacks
     let output: unknown;
-    let model = 'minimax/video-01-live';
+    let model = '';
+    const errors: string[] = [];
 
-    try {
-      output = await replicate.run('minimax/video-01-live' as `${string}/${string}`, { input });
-    } catch (e) {
-      console.warn('minimax/video-01-live failed, trying luma/ray:', e instanceof Error ? e.message : e);
+    const models: { id: string; buildInput: () => Record<string, unknown> }[] = [
+      {
+        id: 'wavespeedai/wan-2.1-t2v-480p',
+        buildInput: () => ({
+          prompt: fullPrompt,
+          ...(productImageUrl ? { image: productImageUrl } : {}),
+        }),
+      },
+      {
+        id: 'minimax/video-01-live',
+        buildInput: () => ({
+          prompt: fullPrompt,
+          ...(productImageUrl ? { first_frame_image: productImageUrl } : {}),
+        }),
+      },
+      {
+        id: 'tencent/hunyuan-video',
+        buildInput: () => ({
+          prompt: fullPrompt,
+        }),
+      },
+    ];
+
+    for (const m of models) {
       try {
-        output = await replicate.run('luma/ray' as `${string}/${string}`, {
-          input: {
-            prompt: fullPrompt,
-            ...(productImageUrl ? { image: productImageUrl } : {}),
-          },
-        });
-        model = 'luma/ray';
-      } catch (e2) {
-        return NextResponse.json(
-          { error: `Video generation failed: ${e2 instanceof Error ? e2.message : String(e2)}` },
-          { status: 500 }
-        );
+        output = await replicate.run(m.id as `${string}/${string}`, { input: m.buildInput() });
+        model = m.id;
+        break;
+      } catch (e) {
+        errors.push(`${m.id}: ${e instanceof Error ? e.message : String(e)}`);
       }
+    }
+
+    if (!output) {
+      return NextResponse.json(
+        { error: `Video generation failed. All models returned errors: ${errors.join(' | ')}` },
+        { status: 500 }
+      );
     }
 
     const videoUrl = extractUrl(output);
