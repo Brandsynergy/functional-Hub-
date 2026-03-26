@@ -232,7 +232,7 @@ export const useAppStore = create<AppStore>()(
         defaultModel: 'black-forest-labs/flux-2-pro',
         defaultQuality: 'hd',
         theme: 'dark',
-        credits: 2,
+        credits: 0,
         creditTier: null,
         freeTrialUsed: false,
       },
@@ -264,7 +264,7 @@ export const useAppStore = create<AppStore>()(
         const { settings: s } = get();
         if (s.freeTrialUsed) return;
         set((state) => ({
-          settings: { ...state.settings, credits: 2, freeTrialUsed: true },
+          settings: { ...state.settings, credits: 10, creditTier: 10 as CreditTier, freeTrialUsed: true },
         }));
       },
 

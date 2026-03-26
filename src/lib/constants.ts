@@ -2,9 +2,9 @@ import { ExportPreset, CreditPack } from '@/types';
 
 // ─── Credit Packs ──────────────────────────────────────────────
 export const CREDIT_PACKS: CreditPack[] = [
-  { tier: 20,  credits: 20,  price: 10.00, enhanceEnabled: false, label: 'Starter' },
-  { tier: 50,  credits: 50,  price: 12.00, enhanceEnabled: true,  label: 'Pro' },
-  { tier: 100, credits: 100, price: 20.00, enhanceEnabled: true,  label: 'Studio' },
+  { tier: 10,  credits: 10,  price: 0,     enhanceEnabled: false, label: 'Free',   description: 'Perfect for testing output quality', renewable: false },
+  { tier: 50,  credits: 50,  price: 15.00, enhanceEnabled: true,  label: 'Pro',    description: 'Ideal for solo entrepreneurs and creators', renewable: true },
+  { tier: 100, credits: 100, price: 20.00, enhanceEnabled: true,  label: 'Studio', description: 'Ideal for heavy users', renewable: true },
 ];
 
 // ─── Face Configuration Options ────────────────────────────────

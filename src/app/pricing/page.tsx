@@ -9,12 +9,23 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   Coins, Check, X, Zap, ShieldCheck, Loader2, CheckCircle2, XCircle,
+  Video, Youtube, ShoppingBag, MessageSquare, Film, Camera, UserPlus, Sparkles,
 } from 'lucide-react';
 import type { CreditTier } from '@/types';
 
+const ALL_FEATURES = [
+  { label: 'UGC Creation', icon: Video },
+  { label: 'Youtube Cloner', icon: Youtube },
+  { label: 'Product Shots', icon: ShoppingBag },
+  { label: 'AI Chats', icon: MessageSquare },
+  { label: 'Video Editing', icon: Film },
+  { label: 'Photo editing', icon: Camera },
+  { label: 'Model Creator', icon: UserPlus },
+];
+
 export default function Pricing() {
-  const { settings, purchaseCredits } = useAppStore();
-  const { credits, creditTier } = settings;
+  const { settings, purchaseCredits, grantFreeTrial } = useAppStore();
+  const { credits, creditTier, freeTrialUsed } = settings;
   const searchParams = useSearchParams();
   const router = useRouter();
   const [loadingTier, setLoadingTier] = useState<CreditTier | null>(null);
@@ -33,7 +44,6 @@ export default function Pricing() {
     }
 
     if (sessionId) {
-      // Verify the session and grant credits
       fetch(`/api/stripe/checkout?session_id=${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
@@ -44,16 +54,25 @@ export default function Pricing() {
             );
           }
         })
-        .catch(() => {
-          // Session verification failed — credits may have already been applied
-        })
+        .catch(() => {})
         .finally(() => {
           router.replace('/pricing', { scroll: false });
         });
     }
   }, [searchParams, purchaseCredits, router]);
 
+  const handleFreeTrial = () => {
+    grantFreeTrial();
+    setSuccessMessage('Welcome! 10 free credits have been added to your account.');
+  };
+
   const handlePurchase = async (tier: CreditTier) => {
+    // Free tier
+    if (tier === 10) {
+      handleFreeTrial();
+      return;
+    }
+
     setLoadingTier(tier);
     setSuccessMessage('');
     setCancelMessage('');
@@ -77,12 +96,12 @@ export default function Pricing() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
+    <div className="max-w-4xl mx-auto space-y-8">
       {/* Header */}
       <div className="text-center">
-        <h1 className="text-2xl font-bold text-white">Buy Image Credits</h1>
+        <h1 className="text-2xl font-bold text-white">Pricing</h1>
         <p className="text-sm text-zinc-400 mt-1">
-          Pay as you go. No subscriptions. No rollovers.
+          Choose the plan that fits your needs
         </p>
       </div>
 
@@ -121,69 +140,108 @@ export default function Pricing() {
       </Card>
 
       {/* Pricing Tiers */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {CREDIT_PACKS.map((pack) => {
           const isActive = creditTier === pack.tier;
-          const perCredit = (pack.price / pack.credits).toFixed(2);
-          const isBestValue = pack.tier === 100;
+          const isFree = pack.tier === 10;
+          const isProPlan = pack.tier === 50;
           const isLoading = loadingTier === pack.tier;
+          const freeUsed = isFree && freeTrialUsed;
 
           return (
             <Card
               key={pack.tier}
               className={`relative overflow-hidden transition-all ${
-                isBestValue
-                  ? 'bg-gradient-to-b from-violet-600/10 to-fuchsia-600/5 border-violet-500/30'
+                isProPlan
+                  ? 'bg-gradient-to-b from-violet-600/10 to-fuchsia-600/5 border-violet-500/30 scale-[1.02] shadow-lg shadow-violet-500/10'
                   : 'bg-white/[0.02] border-white/[0.06] hover:border-white/[0.12]'
               }`}
             >
-              {isBestValue && (
+              {isProPlan && (
                 <div className="absolute top-0 right-0 bg-gradient-to-l from-fuchsia-600 to-violet-600 text-white text-[9px] font-bold uppercase tracking-wider px-3 py-1 rounded-bl-lg">
-                  Best Value
+                  Most Popular
                 </div>
               )}
               <CardContent className="p-6 space-y-5">
                 {/* Tier Name */}
                 <div>
                   <h3 className="text-lg font-bold text-white">{pack.label}</h3>
-                  <p className="text-xs text-zinc-500 mt-0.5">{pack.credits} image credits</p>
+                  <p className="text-xs text-zinc-500 mt-0.5">{pack.description}</p>
                 </div>
 
                 {/* Price */}
                 <div>
-                  <span className="text-3xl font-bold text-white">${pack.price.toFixed(2)}</span>
-                  <span className="text-xs text-zinc-500 ml-1">one-time</span>
-                  <p className="text-[10px] text-zinc-400 mt-1">${perCredit} per credit</p>
+                  {isFree ? (
+                    <>
+                      <span className="text-3xl font-bold text-white">Free</span>
+                      <p className="text-[10px] text-zinc-400 mt-1">10 one-time credits (Non Renewable)</p>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-3xl font-bold text-white">${pack.price.toFixed(0)}</span>
+                      <p className="text-[10px] text-zinc-400 mt-1">{pack.credits} credits (Renewable)</p>
+                    </>
+                  )}
                 </div>
 
                 {/* Features */}
                 <div className="space-y-2.5">
-                  <Feature included label={`${pack.credits} image generations`} />
-                  <Feature included label="All AI models & scenes" />
-                  <Feature included label="All aspect ratios & exports" />
-                  <Feature
-                    included={pack.enhanceEnabled}
-                    label="PRO Enhance (4K + Eye Fix)"
-                    sublabel={pack.enhanceEnabled ? 'Uses 2 credits per image' : undefined}
-                  />
+                  {ALL_FEATURES.map((feat) => {
+                    const Icon = feat.icon;
+                    return (
+                      <div key={feat.label} className="flex items-center gap-2.5">
+                        <Check className="h-3.5 w-3.5 text-green-400 shrink-0" />
+                        <Icon className="h-3.5 w-3.5 text-zinc-500 shrink-0" />
+                        <span className="text-xs text-zinc-300">{feat.label}</span>
+                      </div>
+                    );
+                  })}
+
+                  {/* PRO Enhance */}
+                  <div className="flex items-start gap-2.5">
+                    {pack.enhanceEnabled ? (
+                      <Check className="h-3.5 w-3.5 text-green-400 mt-0.5 shrink-0" />
+                    ) : (
+                      <X className="h-3.5 w-3.5 text-zinc-600 mt-0.5 shrink-0" />
+                    )}
+                    <Sparkles className="h-3.5 w-3.5 text-zinc-500 mt-0.5 shrink-0" />
+                    <div>
+                      <span className={`text-xs ${pack.enhanceEnabled ? 'text-zinc-300' : 'text-zinc-500'}`}>
+                        PRO Enhance (4K + Eye Fix)
+                      </span>
+                      {pack.enhanceEnabled && (
+                        <span className="text-[9px] text-zinc-500 block">* Uses 2 credits per image</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Purchase Button */}
                 <Button
                   onClick={() => handlePurchase(pack.tier)}
-                  disabled={isLoading || loadingTier !== null}
-                  className={`w-full gap-2 h-10 ${
-                    isBestValue
+                  disabled={isLoading || loadingTier !== null || freeUsed}
+                  className={`w-full gap-2 h-11 ${
+                    isProPlan
                       ? 'bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-700 hover:to-fuchsia-700 text-white'
+                      : isFree
+                      ? 'bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/20'
                       : 'bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/[0.08]'
                   }`}
                 >
                   {isLoading ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  ) : (
+                  ) : isFree ? (
                     <Zap className="h-3.5 w-3.5" />
+                  ) : (
+                    <Coins className="h-3.5 w-3.5" />
                   )}
-                  {isActive ? 'Buy Again' : 'Buy Credits'}
+                  {freeUsed
+                    ? 'Free Credits Used'
+                    : isFree
+                    ? 'Get Free Credits'
+                    : isActive
+                    ? 'Renew Credits'
+                    : `Get ${pack.label} — $${pack.price.toFixed(0)}`}
                 </Button>
 
                 {isActive && (
@@ -200,27 +258,11 @@ export default function Pricing() {
       {/* Info */}
       <div className="text-center space-y-2">
         <p className="text-[11px] text-zinc-500">
-          1 credit = 1 standard image generation. Enhanced images (PRO Enhance) use 2 credits.
+          1 credit = 1 standard generation (image or video). Enhanced images (PRO Enhance) use 2 credits.
         </p>
         <p className="text-[11px] text-zinc-400">
-          Credits are non-refundable and do not roll over when purchasing a new pack.
+          Free credits are one-time and non-renewable. Pro and Studio credits can be renewed anytime.
         </p>
-      </div>
-    </div>
-  );
-}
-
-function Feature({ included, label, sublabel }: { included: boolean; label: string; sublabel?: string }) {
-  return (
-    <div className="flex items-start gap-2">
-      {included ? (
-        <Check className="h-3.5 w-3.5 text-green-400 mt-0.5 shrink-0" />
-      ) : (
-        <X className="h-3.5 w-3.5 text-zinc-400 mt-0.5 shrink-0" />
-      )}
-      <div>
-        <span className={`text-xs ${included ? 'text-zinc-300' : 'text-zinc-400'}`}>{label}</span>
-        {sublabel && <span className="text-[9px] text-zinc-500 block">{sublabel}</span>}
       </div>
     </div>
   );

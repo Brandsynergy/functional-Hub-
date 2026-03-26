@@ -85,7 +85,7 @@ export interface GeneratedImage {
 }
 
 // ─── Credits ───────────────────────────────────────────────────
-export type CreditTier = 20 | 50 | 100;
+export type CreditTier = 10 | 50 | 100;
 
 export interface CreditPack {
   tier: CreditTier;
@@ -93,6 +93,8 @@ export interface CreditPack {
   price: number;
   enhanceEnabled: boolean;
   label: string;
+  description: string;
+  renewable: boolean;
 }
 
 // ─── User Auth ─────────────────────────────────────────────────
