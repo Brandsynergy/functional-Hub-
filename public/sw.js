@@ -1,10 +1,21 @@
-const CACHE_NAME = 'image-composer-v1';
+const CACHE_NAME = 'functional-hub-v2';
 
 // Pre-cache app shell on install
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) =>
-      cache.addAll(['/', '/create', '/studio', '/gallery', '/pricing'])
+      cache.addAll([
+        '/',
+        '/ugc-studio',
+        '/youtube-clone',
+        '/product-shots',
+        '/ai-chat',
+        '/video-editor',
+        '/studio',
+        '/create',
+        '/gallery',
+        '/pricing',
+      ])
     )
   );
   self.skipWaiting();

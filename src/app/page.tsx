@@ -93,8 +93,8 @@ export default function Dashboard() {
         <div className="absolute left-1/2 bottom-0 h-48 w-48 bg-fuchsia-500/10 blur-[80px]" />
         <div className="relative">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-fuchsia-500">
-              <Layers className="h-7 w-7 text-white" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-xl overflow-hidden">
+              <img src="/icons/icon-192.png" alt="FUNCTIONAL HUB" className="h-14 w-14 object-cover" />
             </div>
             <div>
               <span className="text-lg font-bold text-white">FUNCTIONAL HUB</span>

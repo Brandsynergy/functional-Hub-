@@ -93,8 +93,8 @@ export function Sidebar() {
       >
         {/* Logo */}
         <Link href="/" className="flex h-16 items-center gap-3 border-b border-white/[0.06] px-4 hover:bg-white/[0.02] transition-colors">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-500">
-            <Layers className="h-5 w-5 text-white" />
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg overflow-hidden">
+            <img src="/icons/icon-192.png" alt="FUNCTIONAL HUB" className="h-9 w-9 object-cover" />
           </div>
           {!collapsed && (
             <div className="flex flex-col">
@@ -215,8 +215,8 @@ export function Sidebar() {
       {/* ─── Mobile Header ─── */}
       <header className="fixed top-0 left-0 right-0 z-40 flex md:hidden h-14 items-center justify-between border-b border-white/[0.06] bg-[#0a0a0b]/95 backdrop-blur-lg px-4">
         <Link href="/" className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-fuchsia-500">
-            <Layers className="h-4 w-4 text-white" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden">
+            <img src="/icons/icon-192.png" alt="FUNCTIONAL HUB" className="h-8 w-8 object-cover" />
           </div>
           <span className="text-sm font-bold tracking-tight text-white">FUNCTIONAL HUB</span>
         </Link>

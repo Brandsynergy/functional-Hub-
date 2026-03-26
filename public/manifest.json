@@ -1,14 +1,14 @@
 {
-  "name": "IMAGE COMPOSER — AI Model & Influencer Studio",
-  "short_name": "IMAGE COMPOSER",
-  "description": "Create hyper-realistic AI models and generate stunning photo content for advertising, brands, and social media.",
+  "name": "FUNCTIONAL HUB — Your Swiss Army Knife for Content Creation",
+  "short_name": "FUNCTIONAL HUB",
+  "description": "Create UGC videos, AI product photography, YouTube-inspired content, and more — all from one dashboard powered by AI.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0a0a0b",
   "theme_color": "#7c3aed",
   "orientation": "portrait-primary",
-  "categories": ["photography", "design", "productivity"],
+  "categories": ["photography", "design", "productivity", "social"],
   "icons": [
     {
       "src": "/icons/icon-192.png",
